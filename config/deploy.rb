@@ -24,6 +24,10 @@ namespace :deploy do
   task :symlink_shared do
     run "ln -s #{shared_path}/config/database.yml #{release_path}/config/"
   end
+  task :migrate_prod_database, :roles => :db do
+    run "cd #{current_path} && bundle exec rake db:migrate RAILS_ENV=#{rails_env}" 
+  end
 end
 
-after "deploy:update_code", "deploy:symlink_shared"
+before "bundle:install", "deploy:symlink_shared"
+before "deploy:restart", "deploy:migrate_prod_database"
