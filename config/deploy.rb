@@ -1,3 +1,4 @@
+
 require "rvm/capistrano"
 require 'bundler/capistrano'
 
@@ -18,3 +19,11 @@ set :rails_env, "production"
 
 set :app_dir, "/home/#{user}/#{application}"
 set :deploy_to, "#{app_dir}"
+
+namespace :deploy do
+  task :symlink_shared do
+    run "ln -s #{shared_path}/config/database.yml #{release_path}/config/"
+  end
+end
+
+after "deploy:update_code", "deploy:symlink_shared"
